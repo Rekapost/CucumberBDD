@@ -1,109 +1,83 @@
 package stepDefinitions;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Properties;
+import java.time.Duration;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-import org.openqa.selenium.By;
+import org.openqa.selenium.PageLoadStrategy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.support.PageFactory;
-import Constants.Constants;
-import io.cucumber.java.Before;
-import io.cucumber.java.en.*;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.testng.Assert;
+import baseclass.BaseClass;
+import crossBrowser.driverFactory;
+import hooks.Hooks;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
+import io.github.bonigarcia.wdm.WebDriverManager;
 import pageObjects.LoginPage;
 
-//public class Steps {
-public class Steps extends Common_Step_Definition{
- //WebDriver driver; as u extended from parent base
+//public class Steps extends BaseClass {   passing values from base class
+public class Steps {	
+//	public Steps(WebDriver driver) {
+//	super(driver);
+//	// TODO Auto-generated constructor stub
+//	}
 	
-	@Before
-	public void setup() throws IOException {
-		
-//******** adding logger ( instantiating logger)******************
-		logger=Logger.getLogger("chrome Browser");
-		PropertyConfigurator.configure("log4j.properties");
-		
-//*************** instantiating config properties( reading property file)*************
-//		configProperties=new Properties();
-//		FileInputStream configPropFile=new FileInputStream("config.properties");
-//		configProperties.load(configPropFile);
-		
-//		configProperties.load(getClass().getResourceAsStream("/config.properties"));
-		
-		
-//		configProperties=new Properties();
-//		FileInputStream configPropFile=new FileInputStream("config.properties");
-//		Properties props=new Properties();
-//		props.load(configPropFile);
-		
-//******************* launching chrome browser**************************
-//		System.setProperty(configProperties.getProperty("CHROME_DRIVER"),configProperties.getProperty("CHROME_DRIVER_LOCATION"));
-		
-//		System.setProperty(props.getProperty("CHROME_DRIVER"),props.getProperty("CHROME_DRIVER_LOCATION"));
-		
-		System.setProperty(Constants.CHROME_DRIVER,Constants.DRIVER_LOCATION);
-		driver=new ChromeDriver();
-		
-//		String brow=configProperties.getProperty("BROWSER");
-//		if(brow.equals("chrome"))		
-//		{
-//			System.setProperty(configProperties.getProperty("CHROME_DRIVER"),configProperties.getProperty("CHROME_DRIVER_LOCATION"));
-//			driver=new ChromeDriver();
-//		}
-//		else if (brow.equals("firefox"))		
-//		{
-//			System.setProperty(configProperties.getProperty("FIREFOX_DRIVER"),configProperties.getProperty("FIREFOX_DRIVER_LOCATION"));
-//			driver=new FirefoxDriver();
-//		}
-	}
- 	
+    public WebDriver driver= driverFactory.driver; //as u extended from parent base
+	static Logger logger=Logger.getLogger(Steps.class);
+	LoginPage lp=new LoginPage(driver);
+	
+//*************************************************************************************************
+	
 	@Given("open browser")
 	public void open_browser() {
-		System.out.println("Opening Browser:");
-				lp=new LoginPage(driver);
+	System.out.println("Opening Browser:");
 	}
-
+	
 	@When("open nopcommerce link {string}")
 	public void open_nopcommerce_link(String string) {
 		logger.info(" launching url");
 		System.out.println("Open nop commerce site: ");
-		driver.get(Constants.APP_URL);
+		
+		driver.get(string);     // passing values from feature file 
+		//driver.get(APP_URL);  passing values from base class
+		
 		driver.manage().window().maximize();
 	}
 
 	@Then("enter user id {string} and password {string}")
-	public void enter_user_id_and_password(String string, String string2) {
+	public void enter_user_id_and_password(String string, String string2) {		
 		logger.info("providing login details");
 		System.out.println("Enter credentials:");
-//		driver.findElement(By.id("Email")).clear();
-//		driver.findElement(By.id("Email")).sendKeys("admin@yourstore.com");
-//		driver.findElement(By.id("Password")).clear();
-//		driver.findElement(By.id("Password")).sendKeys("admin");
-		PageFactory.initElements(driver, LoginPage.class);
-		lp.username.clear();
-		lp.username.sendKeys(Constants.username);
-		lp.password.clear();
-		lp.password.sendKeys(Constants.password);	
+		lp.username(string);   // passing values from feature file 
+		lp.password(string2);  // passing values from feature file 
+		
+		//LoginPage lp=new LoginPage();
+//		lp.username(USERNAME);   passing values from base class
+//		lp.password(PASSWORD);   passing values from base class
+		lp.login();	
 	}
 
-	@Then("dashboard page opens {string}")
-	public void dashboard_page_opens(String string) {
+	@Then("dashboard page opens")
+	public void dashboard_page_opens() {
 		logger.info(" openeing dashboard page");
 		System.out.println("opening dashboard page:");
-		PageFactory.initElements(driver, LoginPage.class);
+		//"Dashboard / nopCommerce administration"
+		//PageFactory.initElements(driver, LoginPage.class);
 		//driver.findElement(By.xpath("//button[normalize-space()='Log in']")).click();
-		LoginPage.loginButton.click();
+		//LoginPage.loginButton.click();
 	}
 
 	@Then("click logout")
 	public void click_logout() {
 		System.out.println("loging out of nop commerce:");
-		if(driver.getTitle()=="Dashboard / nopCommerce administration")
-			{System.out.println(" successful login");}
+		if(driver.getTitle().equals("Dashboard / nopCommerce administration"))
+			{
+			Assert.assertTrue(true);
+			System.out.println(" successful login");
+			}
+		else {
+			Assert.assertTrue(false);
+			}
 		//Assert.assertEquals(expected: true, status);     for boolean output boolean status isDisplayed();
 		//Assert.assertEquals("Dashboard / nopCommerce administration", driver.getTitle());
 	}
@@ -132,9 +106,5 @@ public class Steps extends Common_Step_Definition{
 //		searchCust=new searchCustomerPage(driver);
 //		searchCust.setFirstName("Reka")
 //	}
-	
-	
-	
-	
-	
+
 }

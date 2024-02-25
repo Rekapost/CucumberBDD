@@ -5,57 +5,76 @@ import org.openqa.selenium.support.CacheLookup;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.How;
 import org.openqa.selenium.support.PageFactory;
-
 import Utilities.WaitHelper;
+import crossBrowser.driverFactory;
 
 public class LoginPage {
-	//public WebDriver driver;
 	
-//using constructor to initialze webelements in pagefactory	
- public static WebDriver ldriver;	
+ public static WebDriver driver=driverFactory.driver;	
  WaitHelper waithelper;
-	public LoginPage(WebDriver rdriver)
-	{
-		ldriver=rdriver;
-		PageFactory.initElements(ldriver,this);
-		waithelper=new WaitHelper(ldriver);
-	}
-	
-//What is CacheLookup in Selenium?
+  
+//  What is CacheLookup in Selenium?
 //	@CacheLookup, as the name suggests helps us control when to cache a WebElement and when not to. 
 //	This annotation, when applied over a WebElement, instructs Selenium to keep a cache of the WebElement 
 //	instead of searching for the WebElement every time from the WebPage. This helps us save a lot of time.
 	
 	@FindBy(how=How.ID,using="Email")
 	@CacheLookup
-	public static WebElement username;
+	WebElement username;
 	
 	@FindBy(how=How.ID,using="Password")
 	@CacheLookup
-	public static WebElement password;
+	WebElement password;
 	
-	@FindBy(how=How.XPATH,using="//button[normalize-space()='Log in']")
-	@CacheLookup
-	public static WebElement loginButton;
+	//@FindBy(how=How.XPATH,using="//button[normalize-space()='Log in']")
+	@FindBy(how=How.XPATH,using="//button[@type='submit']")
+	@CacheLookup   
+	WebElement loginButton;
 	
+	
+	//using constructor to initialze webelements in pagefactory	
+		public LoginPage(WebDriver driver)
+		{   
+			this.driver=driver;
+			PageFactory.initElements(driver,this);
+			waithelper=new WaitHelper(driver);
+		}
+		
 // if u r collecting multiple row elements from a table //tbody/tr
 // List<WebElement> tableRows;
 // if u r collecting multiple column elements from a table //tbody/tr/td
 // List<WebElement> tableColumns;
+
+	public void username(String uname)
+	{
+		//waithelper.WaitForElement(username,30);
+		username.clear();
+		username.sendKeys(uname);
+	}
 	
-//	public void username(String username)
-//	{
-//		waithelper.WaitForElement(USERNAME,30);
-//		USERNAME.clear();
-//		USERNAME.sendKeys(username);
-//	}
+	public void password(String pwd)
+		{
+		//waithelper.WaitForElement(PASSWORD,30);
+		password.clear();
+		password.sendKeys(pwd);
+		}
 	
-//	public void password(String password)
-//		{
-//		waithelper.WaitForElement(PASSWORD,30);
-//		PASSWORD.clear();
-//		PASSWORD.sendKeys(password);
-//		}
+	public void login()
+		{
+	//waithelper.WaitForElement(PASSWORD,30);
+		loginButton.click();		
+	   }
+	
+	public void loginDDT(String userName, String passWord) throws InterruptedException {
+		// TODO Auto-generated method stub		
+		username.clear();
+		username.sendKeys(userName);
+		password.clear();
+		password.sendKeys(passWord);
+		loginButton.click();
+	}
+	
+	
 //	comparing one value with multiple value ,
 //	if matched , say record found  pass, else fail
 //	public void clickSearch()
@@ -63,6 +82,7 @@ public class LoginPage {
 //		btnSearch.click();
 //		waithelper.WaitForElement(btnSearch,30);	
 //	}
+	
 //	public int getNoOfRows() {
 //		return(tableRows.size());
 //	}
@@ -99,7 +119,5 @@ public class LoginPage {
 //		}
 //		return false;
 //	}
-	
-	
-	
+
 }
